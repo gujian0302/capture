@@ -13,8 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -150,7 +149,7 @@ public class PrintScreen extends JDialog {
 		JPopupMenu p = new JPopupMenu();
 		Image completeImage = null;
 		try {
-			completeImage = ImageIO.read(PrintScreen.class.getResourceAsStream("/org/marker/screen/res/complete.png"));
+			completeImage = ImageIO.read(PrintScreen.class.getResourceAsStream("/complete.png"));
 			
 		} catch (IOException e1) { e1.printStackTrace(); }
 		
@@ -173,7 +172,6 @@ public class PrintScreen extends JDialog {
 				finishAndinitialization();
 			}
 		});
-		p.insert(new JLabel(" 作者：吴伟 QQ：903595558"), 0);
 		p.addSeparator();
 		p.add(complete);
 		p.add(save);
@@ -209,7 +207,7 @@ public class PrintScreen extends JDialog {
 	public void saveImageFile(){
 		this.setAlwaysOnTop(false);//取消JFrame窗体置顶
 		try {
-			this.setIconImage(ImageIO.read(PrintScreen.class.getResourceAsStream("/org/marker/screen/res/icon.png")));
+			this.setIconImage(ImageIO.read(PrintScreen.class.getResourceAsStream("/icon.png")));
 		} catch (IOException e1) { e1.printStackTrace(); }
 		jc = new JFileChooser();
 		
@@ -240,6 +238,7 @@ public class PrintScreen extends JDialog {
 				newFile.getCanonicalPath();//获取产生异常证明不能保存
 				imageCache = (BufferedImage) getScreenImage();
 				ImageIO.write(imageCache, ends, newFile);
+				saveRange();
 			} catch (IOException e) {
 				System.err.println("save failed! ");
 				saveImageFile();
@@ -253,10 +252,22 @@ public class PrintScreen extends JDialog {
 		finishAndinitialization();//初始化并结束
 	}
 
-	
-	
-	
-	
+	public void saveRange() throws IOException {
+		Rectangle rec =  r.getRect();
+		Double x = rec.getX();
+		Double y = rec.getY();
+		Double width = rec.getWidth();
+		Double height = rec.getHeight();
+		File file = new File("./range.properties");
+		OutputStream outputStream = new FileOutputStream(file);
+		outputStream.write(String.format("x=%s\r\n", x).getBytes());
+		outputStream.write(String.format("y=%s\r\n", y).getBytes());
+		outputStream.write(String.format("width=%s\r\n", width).getBytes());
+		outputStream.write(String.format("height=%s\r\n", height).getBytes());
+
+		outputStream.close();
+	}
+
 	/**
 	 * 注册截图事件监听器
 	 * @param PrintScreenListener 截图事件监听器
