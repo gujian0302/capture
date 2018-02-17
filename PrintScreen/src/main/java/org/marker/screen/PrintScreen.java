@@ -235,10 +235,11 @@ public class PrintScreen extends JDialog {
 			    newFile = new File(file.getAbsolutePath() +"."+ ends);// 否则加上选定的扩展名
 			}
 			try {
-				newFile.getCanonicalPath();//获取产生异常证明不能保存
+				String filePath = newFile.getCanonicalPath();//获取产生异常证明不能保存
 				imageCache = (BufferedImage) getScreenImage();
 				ImageIO.write(imageCache, ends, newFile);
-				saveRange();
+				System.out.print(filePath);
+				saveRange(filePath.substring(0,filePath.toUpperCase().indexOf(ends.toUpperCase()) -1));
 			} catch (IOException e) {
 				System.err.println("save failed! ");
 				saveImageFile();
@@ -252,13 +253,14 @@ public class PrintScreen extends JDialog {
 		finishAndinitialization();//初始化并结束
 	}
 
-	public void saveRange() throws IOException {
+	public void saveRange(String fileName) throws IOException {
+		System.out.println(fileName);
 		Rectangle rec =  r.getRect();
 		Double x = rec.getX();
 		Double y = rec.getY();
 		Double width = rec.getWidth();
 		Double height = rec.getHeight();
-		File file = new File("./range.properties");
+		File file = new File(String.format("%s.properties",fileName));
 		OutputStream outputStream = new FileOutputStream(file);
 		outputStream.write(String.format("x=%s\r\n", x).getBytes());
 		outputStream.write(String.format("y=%s\r\n", y).getBytes());
